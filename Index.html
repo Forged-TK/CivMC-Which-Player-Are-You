@@ -1,0 +1,248 @@
+<index.html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Which CivMC Player Are You?</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for a clean, modern font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font family globally and ensure smooth scrolling */
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div id="quiz-container" class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-lg border border-gray-700">
+        <h1 class="text-4xl font-bold text-center mb-8 text-blue-400">
+            Which CivMC Player Are You?
+        </h1>
+
+        <div id="quiz-content" class="space-y-6">
+            <!-- Question counter will be displayed here -->
+            <div id="question-counter" class="text-xl text-center text-gray-300 mb-6"></div>
+            <!-- Current question text will be displayed here -->
+            <h2 id="question-text" class="text-2xl font-semibold text-center mb-6 text-white"></h2>
+            <!-- Options buttons will be dynamically generated here -->
+            <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+        </div>
+
+        <div id="result-content" class="text-center space-y-6 hidden">
+            <!-- Result header -->
+            <h2 class="text-3xl font-bold text-green-400 mb-4">
+                Congratulations!
+            </h2>
+            <p class="text-xl text-gray-200">You are most like:</p>
+            <!-- Player name result -->
+            <p id="result-player-name" class="text-4xl font-extrabold text-blue-300 leading-tight"></p>
+            <!-- Player description result -->
+            <p id="result-player-description" class="text-lg text-gray-300 mt-4 mb-8"></p>
+            <!-- Restart quiz button -->
+            <button id="restart-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Define the quiz questions and their associated player types
+        const quizQuestions = [
+            {
+                question: "What's your primary goal in CivMC?",
+                options: [
+                    { text: "Building a thriving nation and grand infrastructure.", type: "builder" },
+                    { text: "Engaging in diplomacy, forging alliances, and leading political movements.", type: "leader" },
+                    { text: "Accumulating wealth and dominating the economy.", type: "merchant" },
+                    { text: "Excelling in combat, raiding, and proving dominance.", type: "raider" },
+                    { text: "Documenting events, creating maps, or developing tools for the community.", type: "intellectual" },
+                ],
+            },
+            {
+                question: "How do you prefer to spend your time on the server?",
+                options: [
+                    { text: "Designing and constructing elaborate vaults and defenses.", type: "builder" },
+                    { text: "Debating policies, negotiating treaties, and strategizing with allies.", type: "leader" },
+                    { text: "Setting up complex trade networks and managing market operations.", type: "merchant" },
+                    { text: "Actively participating in PvP, organizing raids, or defending against attacks.", type: "raider" },
+                    { text: "Researching server lore, writing articles, or coding useful plugins.", type: "intellectual" },
+                ],
+            },
+            {
+                question: "What's your biggest fear in CivMC?",
+                options: [
+                    { text: "My meticulously built infrastructure being griefed or dismantled.", type: "builder" },
+                    { text: "Political betrayal or my nation falling into disarray.", type: "leader" },
+                    { text: "My economic ventures failing or losing all my accumulated wealth.", type: "merchant" },
+                    { text: "Being pearled and imprisoned indefinitely.", type: "raider" },
+                    { text: "The community becoming uninformed or lacking proper documentation.", type: "intellectual" },
+                ],
+            },
+            {
+                question: "When a conflict arises, what's your typical approach?",
+                options: [
+                    { text: "Fortifying defenses and preparing for a siege.", type: "builder" },
+                    { text: "Rallying allies, negotiating terms, and seeking diplomatic solutions before force.", type: "leader" },
+                    { text: "Leveraging economic power or profiting from wartime demand.", type: "merchant" },
+                    { text: "Leading the charge, engaging in direct combat, and capturing enemy pearls.", type: "raider" },
+                    { text: "Observing, documenting the events, and possibly analyzing the causes and effects.", type: "intellectual" },
+                ],
+            },
+            {
+                question: "What's your ideal legacy on CivMC?",
+                options: [
+                    { text: "Being remembered for innovative builds and unbreakable defenses.", type: "builder" },
+                    { text: "Being known as a wise leader who shaped the political landscape.", type: "leader" },
+                    { text: "Being recognized as a titan of industry and commerce.", type: "merchant" },
+                    { text: "Being feared as a formidable warrior and a legendary raider.", type: "raider" },
+                    { text: "Being appreciated for contributing valuable knowledge and fostering community understanding.", type: "intellectual" },
+                ],
+            },
+        ];
+
+        // Define the results based on player types and their associated CivMC players
+        const playerResults = {
+            builder: {
+                name: "Yodabird19 (The Great Engineer)",
+                description: "You are the master builder of CivMC, known for your meticulous planning and innovative designs. Like Yodabird19, you excel at creating robust infrastructure, impenetrable vaults, and efficient systems that form the backbone of any thriving civilization. Your legacy is built block by block, providing security and prosperity through engineering marvels."
+            },
+            leader: {
+                name: "Shadno (The Great General) or ChrisChrispie (The Great Luminary)",
+                description: "You are a natural leader and strategist, capable of navigating complex political landscapes. Whether through military prowess like Shadno or astute influence like ChrisChrispie, you are adept at diplomacy, forging alliances, and guiding your nation through challenges. Your presence shapes the course of events on CivMC."
+            },
+            merchant: {
+                name: "BritishWanderer (The Great Merchant)",
+                description: "Your true calling on CivMC is in the bustling world of commerce. Like BritishWanderer, you have a keen eye for economic opportunities, building vast fortunes and innovating trade networks. You understand that true power often lies in controlling the flow of resources and capital, and you leverage this to your advantage."
+            },
+            raider: {
+                name: "Chosentwicelol (The Great Raider) or Ez2Clutch",
+                description: "You thrive on the thrill of conflict and the excitement of dominance. Like Chosentwicelol or Ez2Clutch, you are a formidable force in PvP, known for your raiding prowess and ability to disrupt established powers. You are a master of combat, leaving a trail of destruction and fear in your wake."
+            },
+            intellectual: {
+                name: "Specificlanguage (The Great Writer), Gjum (The Great Scientist), or Thejmqn (The Great Artisan)",
+                description: "You are the intellectual backbone of CivMC, dedicated to knowledge, documentation, and innovation. Whether you're chronicling events like Specificlanguage, developing crucial tools like Gjum, or meticulously mapping the world like Thejmqn, you ensure the community is informed and the server's history is preserved."
+            },
+        };
+
+        // Get references to key DOM elements
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const quizContentEl = document.getElementById('quiz-content');
+        const resultContentEl = document.getElementById('result-content');
+        const resultPlayerNameEl = document.getElementById('result-player-name');
+        const resultPlayerDescriptionEl = document.getElementById('result-player-description');
+        const restartButton = document.getElementById('restart-button');
+
+        // Initialize quiz state variables
+        let currentQuestionIndex = 0;
+        let scores = { // Tracks scores for each player archetype
+            builder: 0,
+            leader: 0,
+            merchant: 0,
+            raider: 0,
+            intellectual: 0,
+        };
+
+        /**
+         * Renders the current question and its answer options to the DOM.
+         */
+        function renderQuestion() {
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            // Update question counter
+            questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+            // Update question text
+            questionTextEl.textContent = currentQuestion.question;
+            optionsContainerEl.innerHTML = ''; // Clear any previously rendered options
+
+            // Create and append a button for each answer option
+            currentQuestion.options.forEach((option) => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                // Add Tailwind CSS classes for styling buttons
+                button.classList.add(
+                    'bg-gray-700', 'hover:bg-blue-600', 'text-white', 'font-medium', 'py-3', 'px-6',
+                    'rounded-lg', 'transition-all', 'duration-300', 'ease-in-out', 'transform',
+                    'hover:scale-105', 'shadow-md', 'border', 'border-gray-600', 'focus:outline-none',
+                    'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-opacity-75'
+                );
+                // Attach event listener to handle clicks on options
+                button.addEventListener('click', () => handleAnswerClick(option.type));
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        /**
+         * Handles the user's selection of an answer. Updates scores and progresses the quiz.
+         * @param {string} type - The archetype type associated with the selected answer.
+         */
+        function handleAnswerClick(type) {
+            scores[type]++; // Increment the score for the chosen archetype
+
+            // Check if there are more questions or if the quiz is finished
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++; // Move to the next question
+                renderQuestion(); // Render the new question
+            } else {
+                determineResult(); // All questions answered, calculate and display results
+            }
+        }
+
+        /**
+         * Determines the final player archetype based on the highest accumulated score.
+         * Then, it displays the result section and hides the quiz section.
+         */
+        function determineResult() {
+            let highestScore = -1;
+            let resultType = '';
+
+            // Iterate through scores to find the archetype with the highest score
+            for (const type in scores) {
+                if (scores[type] > highestScore) {
+                    highestScore = scores[type];
+                    resultType = type;
+                }
+            }
+
+            // Retrieve the player details for the determined archetype
+            const player = playerResults[resultType];
+            resultPlayerNameEl.textContent = player.name;
+            resultPlayerDescriptionEl.textContent = player.description;
+
+            // Toggle visibility: hide quiz content and show result content
+            quizContentEl.classList.add('hidden');
+            resultContentEl.classList.remove('hidden');
+        }
+
+        /**
+         * Resets the quiz to its initial state, allowing the user to play again.
+         * It re-initializes scores and displays the first question.
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0; // Reset question index
+            scores = { // Reset all scores to zero
+                builder: 0,
+                leader: 0,
+                merchant: 0,
+                raider: 0,
+                intellectual: 0,
+            };
+
+            // Toggle visibility: hide result content and show quiz content
+            resultContentEl.classList.add('hidden');
+            quizContentEl.classList.remove('hidden');
+            renderQuestion(); // Start the quiz from the first question
+        }
+
+        // Attach event listener to the restart button
+        restartButton.addEventListener('click', restartQuiz);
+
+        // Ensure the quiz starts rendering questions once the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', renderQuestion);
+    </script>
+</body>
+</html>
+
